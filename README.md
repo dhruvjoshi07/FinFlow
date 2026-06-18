@@ -3,7 +3,8 @@
 
 FinFlow is a robust, production-ready Distributed Payment Processing Pipeline engineered to handle high-volume transactions with absolute consistency, low latency, and fault tolerance. Built to simulate enterprise-grade financial tech architecture, the system mitigates common distributed system failure modes such as race conditions, double-spending, network partitions, and message loss.
 
----
+---<img width="1747" height="902" alt="Screenshot 2026-06-18 172551" src="https://github.com/user-attachments/assets/a5b4f927-a0d5-436f-a438-50282269fe36" />
+
 
 ## 🚀 System Architecture & "Where" Everything Fits
 
