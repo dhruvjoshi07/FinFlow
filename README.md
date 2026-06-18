@@ -22,6 +22,8 @@ FinFlow separates concerns across independent microservices to ensure horizontal
 │
 └──► [ Notification Service ] ──► (Webhooks/Email)
 
+<img width="690" height="806" alt="Screenshot 2026-06-18 172423" src="https://github.com/user-attachments/assets/2d8ee098-2868-4ef0-9170-e9a0d34ef764" />
+
 
 1. **API Gateway / Entry Point:** Handles client transaction requests, TLS termination, rate-limiting, and payload validation.
 2. **Idempotency Layer (Redis Cache):** Intercepts requests immediately to guarantee that an identical payload retry within a specific window never causes duplicate debits.
@@ -59,6 +61,9 @@ Writing to a database and publishing an event to Kafka must happen atomically[ci
 By isolating heavy third-party bank settlement communication into asynchronous worker tasks via Kafka consumer loops, the user-facing API remains highly available with sub-100ms response times, regardless of background load[cite: 1].
 
 ---
+<img width="1917" height="922" alt="Screenshot 2026-06-18 172304" src="https://github.com/user-attachments/assets/06257e74-3a51-441e-b834-03bcb70a8071" />
+<img width="1907" height="917" alt="Screenshot 2026-06-18 172205" src="https://github.com/user-attachments/assets/08cd4c1f-c159-42bd-b474-2e00a5adb0d5" />
+<img width="1882" height="917" alt="Screenshot 2026-06-18 172329" src="https://github.com/user-attachments/assets/1f1d3582-ab32-4aaa-a2fb-c993bcb2841a" />
 
 ## 📂 Project Structure
 
