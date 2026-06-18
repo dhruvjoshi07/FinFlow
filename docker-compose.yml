@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  # Primary PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: finflow-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+      POSTGRES_DB: finflow
+    ports:
+      - "5433:5432" # Mapping to port 5433 to avoid conflict with the local port 5432 running on host
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  # Caching Layer
+  redis:
+    image: redis:7-alpine
+    container_name: finflow-cache
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+
+  # Message Broker for Event-Driven Microservices
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: finflow-broker
+    restart: always
+    ports:
+      - "5672:5672"   # AMQP protocol port
+      - "15672:15672" # Management UI dashboard
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmqdata:/var/lib/rabbitmq
+
+volumes:
+  pgdata:
+  redisdata:
+  rabbitmqdata:

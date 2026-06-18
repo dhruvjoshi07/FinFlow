@@ -1,0 +1,90 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:../dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String     @id @default(uuid())
+  name         String
+  email        String     @unique
+  passwordHash String
+  kycStatus    String     @default("PENDING") // PENDING, APPROVED, REJECTED
+  role         String     @default("USER")    // USER, ADMIN
+  createdAt    DateTime   @default(now())
+  wallets      Wallet[]
+  auditLogs    AuditLog[]
+}
+
+model Wallet {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  currency  String   // USD, EUR, INR, GBP, JPY, etc.
+  balance   Float    @default(0.0)
+  status    String   @default("ACTIVE") // ACTIVE, FROZEN
+  createdAt DateTime @default(now())
+  
+  sentTx     Transaction[] @relation("SenderWallet")
+  receivedTx Transaction[] @relation("ReceiverWallet")
+}
+
+model Transaction {
+  id               String   @id @default(uuid())
+  senderWalletId   String?
+  senderWallet     Wallet?  @relation("SenderWallet", fields: [senderWalletId], references: [id])
+  receiverWalletId String
+  receiverWallet   Wallet   @relation("ReceiverWallet", fields: [receiverWalletId], references: [id])
+  amount           Float    // Amount in sender's currency
+  currency         String   // Sender's currency
+  exchangeRate     Float    @default(1.0)
+  convertedAmount  Float    // Amount receiver gets in receiver's currency
+  fee              Float    @default(0.0)
+  status           String   @default("PENDING") // PENDING, COMPLETED, FAILED, FLAGGED
+  createdAt        DateTime @default(now())
+  
+  ledgerEntries LedgerEntry[]
+  fraudAlerts   FraudAlert[]
+}
+
+model LedgerEntry {
+  id            String      @id @default(uuid())
+  transactionId String
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
+  walletId      String
+  debit         Float       @default(0.0)
+  credit        Float       @default(0.0)
+  createdAt     DateTime    @default(now())
+}
+
+model ExchangeRate {
+  id           String   @id @default(uuid())
+  currencyFrom String
+  currencyTo   String
+  rate         Float
+  updatedAt    DateTime @updatedAt
+
+  @@unique([currencyFrom, currencyTo])
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  action    String
+  ipAddress String?
+  timestamp DateTime @default(now())
+}
+
+model FraudAlert {
+  id            String      @id @default(uuid())
+  transactionId String
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
+  riskScore     Int         // 0 - 100
+  reason        String
+  status        String      @default("NEW") // NEW, REVIEWED, RESOLVED
+  createdAt     DateTime    @default(now())
+}
